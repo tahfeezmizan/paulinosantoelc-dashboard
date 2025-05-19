@@ -1,10 +1,15 @@
+"use client"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
+import { Menu, LogOut } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Sidebar } from "@/components/sidebar"
+import { useAuth } from "@/components/auth-provider"
 
 export function Header() {
+  const { logout } = useAuth()
+
   return (
     <header className="h-16 border-b bg-white flex items-center justify-between px-4">
       {/* Mobile Menu Trigger */}
@@ -20,8 +25,8 @@ export function Header() {
         </SheetContent>
       </Sheet>
 
-      {/* User Profile */}
-      <div className="ml-auto flex items-center gap-2">
+      {/* User Profile and Logout */}
+      <div className="ml-auto flex items-center gap-4">
         <div className="text-right hidden sm:block">
           <p className="text-sm font-medium">Super Admin</p>
           <p className="text-xs text-gray-500">bill.smith@example.com</p>
@@ -30,6 +35,10 @@ export function Header() {
           <AvatarImage src="/placeholder.svg" alt="User" />
           <AvatarFallback>SA</AvatarFallback>
         </Avatar>
+        <Button variant="ghost" size="icon" onClick={logout} title="Logout">
+          <LogOut className="h-5 w-5" />
+          <span className="sr-only">Logout</span>
+        </Button>
       </div>
     </header>
   )
