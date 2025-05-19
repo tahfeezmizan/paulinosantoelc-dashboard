@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/components/auth-provider"
 
 // Define form schema with validation
 const formSchema = z.object({
@@ -22,7 +23,16 @@ type FormValues = z.infer<typeof formSchema>
 export default function LoginPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const { login, isAuthenticated } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard")
+    }
+  }, [isAuthenticated, router])
 
   // Initialize form with React Hook Form
   const form = useForm<FormValues>({
@@ -35,13 +45,12 @@ export default function LoginPage() {
 
   // Handle form submission
   const onSubmit = async (data: FormValues) => {
-    try {
-      // In a real app, you would validate credentials with your backend
-      // This is a mock authentication for demonstration
-      if (data.email && data.password) {
-        // Store authentication state (in a real app, you'd store a token)
-        localStorage.setItem("isAuthenticated", "true")
+    setIsSubmitting(true)
 
+    try {
+      const success = await login(data.email, data.password)
+
+      if (success) {
         // Show success message
         toast({
           title: "Login successful",
@@ -49,16 +58,22 @@ export default function LoginPage() {
         })
 
         // Redirect to dashboard
-        setTimeout(() => {
-          router.push("/dashboard")
-        }, 1000)
+        router.push("/dashboard")
+      } else {
+        toast({
+          title: "Login failed",
+          description: "Invalid email or password. Please try again.",
+          variant: "destructive",
+        })
       }
     } catch (error) {
       toast({
         title: "Login failed",
-        description: "Please check your credentials and try again.",
+        description: "An error occurred. Please try again.",
         variant: "destructive",
       })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -117,8 +132,8 @@ export default function LoginPage() {
               )}
             />
 
-            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
-              Log in
+            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600" disabled={isSubmitting}>
+              {isSubmitting ? "Logging in..." : "Log in"}
             </Button>
           </form>
         </Form>

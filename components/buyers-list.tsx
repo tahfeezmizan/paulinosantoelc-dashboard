@@ -36,8 +36,8 @@ import { FileText, Search } from "lucide-react";
 import { useState } from "react";
 import { FilterDropdowns } from "./filter-dropdowns";
 
-// Define the supplier data type
-interface Supplier {
+// Define the buyers data type
+interface Buyers {
   id: string;
   name: string;
   country: string;
@@ -45,8 +45,8 @@ interface Supplier {
   products: string;
 }
 
-// Sample supplier data
-const supplierData: Supplier[] = [
+// Sample buyers data
+const buyersData: Buyers[] = [
   {
     id: "01",
     name: "Jenny Wilson",
@@ -140,24 +140,24 @@ const supplierData: Supplier[] = [
   },
 ];
 
-export function SupplierList() {
+export function BuyersList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Filter suppliers based on search query
-  const filteredSuppliers = supplierData.filter(
-    (supplier) =>
-      supplier.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      supplier.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      supplier.country.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter buyerss based on search query
+  const filteredbuyerss = buyersData.filter(
+    (buyers) =>
+      buyers.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      buyers.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      buyers.country.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Calculate pagination
-  const totalItems = filteredSuppliers.length;
+  const totalItems = filteredbuyerss.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedSuppliers = filteredSuppliers.slice(
+  const paginatedbuyerss = filteredbuyerss.slice(
     startIndex,
     startIndex + itemsPerPage
   );
@@ -167,8 +167,8 @@ export function SupplierList() {
       {/* Search and Filter */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Supplier List</h1>
-          <p className="text-gray-500">View, manage Supplier List.</p>
+          <h1 className="text-2xl font-bold">Buyer List</h1>
+          <p className="text-gray-500">View, manage Buyer List.</p>
         </div>
 
         <div className="flex-1 flex items-center justify-end gap-5 max-w-sm">
@@ -186,7 +186,7 @@ export function SupplierList() {
         </div>
       </div>
 
-      {/* Suppliers Table */}
+      {/* buyerss Table */}
       <div className="bg-white rounded-md border shadow-sm">
         <div className="overflow-x-auto">
           <Table>
@@ -196,7 +196,7 @@ export function SupplierList() {
                   SL.
                 </TableHead>
                 <TableHead className="text-[#0F172A] font-semibold">
-                  Supplier Name
+                  Buyers Name
                 </TableHead>
                 <TableHead className="text-[#0F172A] font-semibold">
                   Country
@@ -210,25 +210,25 @@ export function SupplierList() {
                 <TableHead className="text-[#0F172A] font-semibold">
                   Products
                 </TableHead>
-                <TableHead className="w-[80px] text-[#0F172A] font-semibold">
+                <TableHead className=" w-[80px] text-[#0F172A] font-semibold">
                   Action
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedSuppliers.map((supplier) => (
-                <TableRow key={supplier.id}>
-                  <TableCell className="font-medium">{supplier.id}.</TableCell>
-                  <TableCell>{supplier.name}</TableCell>
-                  <TableCell>{supplier.country}</TableCell>
-                  <TableCell>{supplier.company}</TableCell>
+              {paginatedbuyerss.map((buyers) => (
+                <TableRow key={buyers.id}>
+                  <TableCell className="text-[#475569]">{buyers.id}.</TableCell>
+                  <TableCell>{buyers.name}</TableCell>
+                  <TableCell>{buyers.country}</TableCell>
+                  <TableCell>{buyers.company}</TableCell>
                   <TableCell>
                     <Button variant="link" className="text-blue-500 p-0 h-auto">
                       <FileText className="h-4 w-4 mr-1" />
                       Image
                     </Button>
                   </TableCell>
-                  <TableCell>{supplier.products}</TableCell>
+                  <TableCell>{buyers.products}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -251,6 +251,7 @@ export function SupplierList() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Edit buyers</DropdownMenuItem>
                         <DropdownMenuItem className="text-red-600">
                           Delete
                         </DropdownMenuItem>
