@@ -1,81 +1,90 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Eye, EyeOff } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { useToast } from "@/hooks/use-toast"
-import { useAuth } from "@/components/auth-provider"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/components/auth-provider";
 
 // Define form schema with validation
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-})
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const { login, isAuthenticated } = useAuth()
-  const [showPassword, setShowPassword] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter();
+  const { toast } = useToast();
+  const { login, isAuthenticated } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard")
+      router.push("/dashboard");
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, router]);
 
   // Initialize form with React Hook Form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "admin1017@admin.com",
+      password: "4564532132",
     },
-  })
+  });
 
   // Handle form submission
   const onSubmit = async (data: FormValues) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      const success = await login(data.email, data.password)
+      const success = await login(data.email, data.password);
 
       if (success) {
         // Show success message
         toast({
           title: "Login successful",
           description: "Redirecting to dashboard...",
-        })
+        });
 
         // Redirect to dashboard
-        router.push("/dashboard")
+        router.push("/dashboard");
       } else {
         toast({
           title: "Login failed",
           description: "Invalid email or password. Please try again.",
           variant: "destructive",
-        })
+        });
       }
     } catch (error) {
       toast({
         title: "Login failed",
         description: "An error occurred. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -87,8 +96,12 @@ export default function LoginPage() {
 
         {/* Welcome message */}
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Hi, Welcome Back! 👋</h1>
-          <p className="text-gray-500">Please Enter Your Email And Password Below!</p>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Hi, Welcome Back! 👋
+          </h1>
+          <p className="text-gray-500">
+            Please Enter Your Email And Password Below!
+          </p>
         </div>
 
         {/* Login form */}
@@ -116,14 +129,24 @@ export default function LoginPage() {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Input type={showPassword ? "text" : "password"} placeholder="••••••••••" {...field} />
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••••"
+                        {...field}
+                      />
                       <button
                         type="button"
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                         onClick={() => setShowPassword(!showPassword)}
                       >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                        <span className="sr-only">
+                          {showPassword ? "Hide password" : "Show password"}
+                        </span>
                       </button>
                     </div>
                   </FormControl>
@@ -132,12 +155,16 @@ export default function LoginPage() {
               )}
             />
 
-            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full bg-blue-500 hover:bg-blue-600"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Logging in..." : "Log in"}
             </Button>
           </form>
         </Form>
       </div>
     </div>
-  )
+  );
 }
