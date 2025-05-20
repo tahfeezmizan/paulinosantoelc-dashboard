@@ -1,170 +1,116 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/components/auth-provider";
+import { Eye, EyeOff } from "lucide-react"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useLoginUserMutation } from "@/redux/api/authApi"
+import { useDispatch } from "react-redux"
+import { setUser } from "@/redux/slice/userSlice"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
-// Define form schema with validation
-const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters" }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = {
+  email: string
+  password: string
+}
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const { login, isAuthenticated } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>()
+  const router = useRouter()
+  const dispatch = useDispatch()
+  const [user, { isLoading }] = useLoginUserMutation()
+  const [showPassword, setShowPassword] = useState(false)
 
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/dashboard");
-    }
-  }, [isAuthenticated, router]);
-
-  // Initialize form with React Hook Form
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "admin1017@admin.com",
-      password: "4564532132",
-    },
-  });
-
-  // Handle form submission
   const onSubmit = async (data: FormValues) => {
-    setIsSubmitting(true);
+    console.log("Form Data:", data)
 
     try {
-      const success = await login(data.email, data.password);
+      const res = await user(data).unwrap()
+      console.log("API Response:", res)
 
-      if (success) {
-        // Show success message
-        toast({
-          title: "Login successful",
-          description: "Redirecting to dashboard...",
-        });
+      if (!res.success) {
+        toast.error(res?.message || "Login failed")
+        return
+      }
 
-        // Redirect to dashboard
-        router.push("/dashboard");
+      // Extract role from response - ensure we're accessing the correct path
+      const role = res.data?.user?.role
+      console.log("User Role:", role)
+
+      // Check if user is an admin
+      if (role === "ADMIN" || role === "SUPER_ADMIN") {
+        // User is an admin, proceed to dashboard
+        dispatch(setUser(res))
+        toast.success(res?.message || "Login successful")
+        router.push("/dashboard")
       } else {
-        toast({
-          title: "Login failed",
-          description: "Invalid email or password. Please try again.",
-          variant: "destructive",
-        });
+        // Not an admin, force logout
+        localStorage.removeItem("email")
+        localStorage.removeItem("accessToken")
+        localStorage.removeItem("persist:root")
+        toast.error("You are not authorized to access the admin dashboard")
+        // No need to redirect as we're already on the login page
       }
     } catch (error) {
-      toast({
-        title: "Login failed",
-        description: "An error occurred. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
+      console.error("Login Error:", error)
+      toast.error("Login failed. Please check your credentials and try again.")
     }
-  };
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-8 text-center">
-        {/* Logo */}
         <div className="flex justify-center">
           <div className="text-blue-500 font-bold text-4xl">LOGO</div>
         </div>
 
-        {/* Welcome message */}
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">
-            Hi, Welcome Back! 👋
-          </h1>
-          <p className="text-gray-500">
-            Please Enter Your Email And Password Below!
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight">Hi, Welcome Back! 👋</h1>
+          <p className="text-gray-500">Please Enter Your Email And Password Below!</p>
         </div>
 
-        {/* Login form */}
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel>Email address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="george.young@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="text-left">
+            <label className="block mb-1 font-medium">Email address</label>
+            <Input
+              type="email"
+              placeholder="george.young@example.com"
+              {...register("email", { required: "Email is required" })}
             />
+            {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
+          </div>
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••••"
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                        <span className="sr-only">
-                          {showPassword ? "Hide password" : "Show password"}
-                        </span>
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <div className="text-left">
+            <label className="block mb-1 font-medium">Password</label>
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••••"
+                {...register("password", { required: "Password is required" })}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+              </button>
+            </div>
+            {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>}
+          </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Logging in..." : "Log in"}
-            </Button>
-          </form>
-        </Form>
+          <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Log in"}
+          </Button>
+        </form>
       </div>
     </div>
-  );
+  )
 }
