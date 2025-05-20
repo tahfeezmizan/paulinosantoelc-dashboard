@@ -11,7 +11,7 @@ export function Header() {
   const { logout } = useAuth();
 
   return (
-    <header className="h-24 bg-white shadow-md flex items-center justify-between pr-16 z-10">
+    <header className="h-20 bg-white shadow-md flex items-center justify-between pr-16 z-10">
       {/* Mobile Menu Trigger */}
       <Sheet>
         <SheetTrigger asChild>

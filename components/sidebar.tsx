@@ -57,7 +57,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-white border-gray-200 hidden md:flex flex-col h-screen">
       {/* Logo */}
-      <div className="h-24 p-4 flex items-center justify-center">
+      <div className="h-20 p-4 flex items-center justify-center">
         <Link href="/dashboard">
           <div className="text-blue-500 font-bold text-2xl">LOGO</div>
         </Link>
