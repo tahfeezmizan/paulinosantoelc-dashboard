@@ -2,6 +2,15 @@ import { baseApi } from "./baseApi";
 
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    // getAllUser
+    getAllUser: builder.query({
+      query: () => ({
+        url: "/user",
+        method: "GET",
+      }),
+    }),
+
+    // UpdateMe
     UpdateMe: builder.mutation({
       query: ({ body }) => {
         console.log("UpdateMe body:", body); // ✅ Log inside query
@@ -14,4 +23,6 @@ const userApi = baseApi.injectEndpoints({
     }),
   }),
 });
-export const { useUpdateMeMutation } = userApi;
+
+
+export const { useGetAllUserQuery, useUpdateMeMutation } = userApi;
