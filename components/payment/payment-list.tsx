@@ -26,8 +26,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetAllPaymentsQuery } from "@/redux/api/paymentsApi";
+import { I_ErrorResponse, User } from "@/types/common";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import PaymentTable from "./payment-table";
 
 // Define the payment data type
 interface Payment {
@@ -140,7 +142,7 @@ export function PaymentList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const { data, isLoading } = useGetAllPaymentsQuery(null);
+  const { data, isLoading, isFetching, error } = useGetAllPaymentsQuery(null);
 
   console.log("All Payment", data);
 
@@ -158,166 +160,189 @@ export function PaymentList() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPayments = filteredPayments.slice(0, itemsPerPage); // Using the sample data for display
 
-  return (
-    <div className="space-y-6">
-      {/* Payment History Section */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-800">Payment History</h2>
+  // decide what to display
+  let content;
 
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-              <Input
-                type="search"
-                placeholder="Search"
-                className="pl-8 bg-white w-[200px] md:w-[250px]"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+  if (isLoading || isFetching) {
+    content = <p>Loading...</p>;
+  }
+
+  if (error) {
+    console.log(error);
+    const err = error as I_ErrorResponse;
+    content = (
+      <div className="text-red-500 bg-red-100 py-10 px-5">
+        <p>Error: {err?.data?.message}</p>
+      </div>
+    );
+  }
+
+  if (!isLoading && !isFetching && !error) {
+    const paymentsLists = data?.users as User[];
+    console.log("Payments content", paymentsLists);
+    if (paymentsLists.length === 0) {
+      content = <p>No Payment Found</p>;
+    } else {
+      content = (
+        <div className="space-y-6">
+          {/* Payment History Section */}
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Payment History
+              </h2>
+
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                  <Input
+                    type="search"
+                    placeholder="Search"
+                    className="pl-8 bg-white w-[200px] md:w-[250px]"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Table */}
+            <div className="bg-white rounded-md border shadow-sm">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[60px]">SL.</TableHead>
+                      <TableHead>Buyer Name</TableHead>
+                      <TableHead>Payment Date</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Subscription Plan</TableHead>
+                      <TableHead>Method</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedPayments.map((payment) => (
+                      <PaymentTable key={payment.id} payment={payment} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+            </div>
+            <div className="flex items-center justify-between px-4 py-4 border-t">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <span>Show</span>
+                <Select
+                  value={itemsPerPage.toString()}
+                  onValueChange={(value) => {
+                    setItemsPerPage(Number.parseInt(value));
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="h-8 w-[70px]">
+                    <SelectValue placeholder={itemsPerPage.toString()} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span>from {totalItems}</span>
+              </div>
+
+              <div className="">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) setCurrentPage(currentPage - 1);
+                        }}
+                        className={
+                          currentPage === 1
+                            ? "pointer-events-none opacity-50"
+                            : ""
+                        }
+                      />
+                    </PaginationItem>
+
+                    {Array.from({ length: Math.min(5, totalPages) }).map(
+                      (_, i) => {
+                        let pageNumber: number;
+
+                        // Logic to show correct page numbers with ellipsis
+                        if (totalPages <= 5) {
+                          pageNumber = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNumber = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNumber = totalPages - 4 + i;
+                        } else {
+                          pageNumber = currentPage - 2 + i;
+                        }
+
+                        if (
+                          pageNumber === 1 ||
+                          pageNumber === totalPages ||
+                          (pageNumber >= currentPage - 1 &&
+                            pageNumber <= currentPage + 1)
+                        ) {
+                          return (
+                            <PaginationItem key={pageNumber}>
+                              <PaginationLink
+                                href="#"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setCurrentPage(pageNumber);
+                                }}
+                                isActive={currentPage === pageNumber}
+                              >
+                                {pageNumber}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        } else if (
+                          pageNumber === 2 ||
+                          pageNumber === totalPages - 1
+                        ) {
+                          return (
+                            <PaginationItem key={pageNumber}>
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          );
+                        }
+                        return null;
+                      }
+                    )}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages)
+                            setCurrentPage(currentPage + 1);
+                        }}
+                        className={
+                          currentPage === totalPages
+                            ? "pointer-events-none opacity-50"
+                            : ""
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Payment Table */}
-        <div className="bg-white rounded-md border shadow-sm">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[60px]">SL.</TableHead>
-                  <TableHead>Buyer Name</TableHead>
-                  <TableHead>Payment Date</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Subscription Plan</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedPayments.map((payment) => (
-                  <TableRow key={payment.id}>
-                    <TableCell className="font-medium">{payment.id}.</TableCell>
-                    <TableCell>{payment.date}</TableCell>
-                    <TableCell>{payment.buyer}</TableCell>
-                    <TableCell>{payment.country}</TableCell>
-                    <TableCell>{payment.type}</TableCell>
-                    <TableCell>{payment.method}</TableCell>
-                    <TableCell>{payment.plan}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination */}
-        </div>
-        <div className="flex items-center justify-between px-4 py-4 border-t">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span>Show</span>
-            <Select
-              value={itemsPerPage.toString()}
-              onValueChange={(value) => {
-                setItemsPerPage(Number.parseInt(value));
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={itemsPerPage.toString()} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-            <span>from {totalItems}</span>
-          </div>
-
-          <div className="">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (currentPage > 1) setCurrentPage(currentPage - 1);
-                    }}
-                    className={
-                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                    }
-                  />
-                </PaginationItem>
-
-                {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-                  let pageNumber: number;
-
-                  // Logic to show correct page numbers with ellipsis
-                  if (totalPages <= 5) {
-                    pageNumber = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNumber = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNumber = totalPages - 4 + i;
-                  } else {
-                    pageNumber = currentPage - 2 + i;
-                  }
-
-                  if (
-                    pageNumber === 1 ||
-                    pageNumber === totalPages ||
-                    (pageNumber >= currentPage - 1 &&
-                      pageNumber <= currentPage + 1)
-                  ) {
-                    return (
-                      <PaginationItem key={pageNumber}>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(pageNumber);
-                          }}
-                          isActive={currentPage === pageNumber}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  } else if (
-                    pageNumber === 2 ||
-                    pageNumber === totalPages - 1
-                  ) {
-                    return (
-                      <PaginationItem key={pageNumber}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    );
-                  }
-                  return null;
-                })}
-
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (currentPage < totalPages)
-                        setCurrentPage(currentPage + 1);
-                    }}
-                    className={
-                      currentPage === totalPages
-                        ? "pointer-events-none opacity-50"
-                        : ""
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+      );
+    }
+  }
 }

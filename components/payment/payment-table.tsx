@@ -2,6 +2,7 @@ import React from "react";
 import { TableCell, TableRow } from "../ui/table";
 
 export default function PaymentTable({ payment }: any) {
+  console.log(payment);
   return (
     <div>
       <TableRow key={payment.id}>
