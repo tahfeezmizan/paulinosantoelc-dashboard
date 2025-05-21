@@ -1,4 +1,4 @@
-import { VerificationTable } from "@/components/verification-table"
+import { VerificationTable } from "@/components/verification/verification-list"
 
 export default function VerificationPage() {
   return (

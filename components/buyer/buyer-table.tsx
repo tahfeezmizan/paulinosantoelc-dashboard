@@ -16,8 +16,8 @@ export default function BuyerTable({
   buyer: User;
   index: number;
 }) {
+  console.log(buyer)
   return (
-    <div>
       <TableRow key={buyer?.id}>
         <TableCell className="text-[#475569]">{index + 1}.</TableCell>
         <TableCell>{buyer?.firstName + " " + buyer?.lastName}</TableCell>
@@ -60,6 +60,6 @@ export default function BuyerTable({
           </DropdownMenu>
         </TableCell>
       </TableRow>
-    </div>
+    
   );
 }

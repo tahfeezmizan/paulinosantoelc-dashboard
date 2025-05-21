@@ -25,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useGetAllPaymentsQuery } from "@/redux/api/paymentsApi";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
@@ -139,6 +140,10 @@ export function PaymentList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
+  const { data, isLoading } = useGetAllPaymentsQuery(null);
+
+  console.log("All Payment", data);
+
   // Filter payments based on search query
   const filteredPayments = paymentData.filter(
     (payment) =>
@@ -181,13 +186,12 @@ export function PaymentList() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[60px]">SL.</TableHead>
-                  <TableHead>Pay Date</TableHead>
-                  <TableHead>Buyer List</TableHead>
-                  <TableHead>Country</TableHead>
-                  <TableHead>Company Name</TableHead>
-                  <TableHead>B. Type</TableHead>
-                  <TableHead>Plan Type</TableHead>
-                  <TableHead>P. Method</TableHead>
+                  <TableHead>Buyer Name</TableHead>
+                  <TableHead>Payment Date</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Subscription Plan</TableHead>
+                  <TableHead>Method</TableHead>
+                  <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -197,10 +201,9 @@ export function PaymentList() {
                     <TableCell>{payment.date}</TableCell>
                     <TableCell>{payment.buyer}</TableCell>
                     <TableCell>{payment.country}</TableCell>
-                    <TableCell>{payment.company}</TableCell>
                     <TableCell>{payment.type}</TableCell>
-                    <TableCell>{payment.plan}</TableCell>
                     <TableCell>{payment.method}</TableCell>
+                    <TableCell>{payment.plan}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
