@@ -1,17 +1,54 @@
 "use client";
-import { useGetUserByIdQuery } from "@/redux/api/userApi";
+import {
+  useDeleteUserMutation,
+  useGetUserByIdQuery,
+} from "@/redux/api/userApi";
 import { CompanyDataType } from "@/types/common";
 import Image from "next/image";
-import React from "react";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 import { Button } from "../ui/button";
+import BusinessInfo from "./business-info";
+import CompanyDetails from "./company-details";
+import CompanyInformation from "./company-information";
+import ContactAndOwnerInfo from "./contact-and-owner-info";
+import { useRouter } from "next/navigation";
 
 export default function UserAccount({ userId }: string) {
-  console.log("From User Account", userId);
-
-  const { data, isLoading } = useGetUserByIdQuery(userId);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { data } = useGetUserByIdQuery(userId);
   const companyData: CompanyDataType = data?.companyInfo || {};
+  const [deleteUser] = useDeleteUserMutation();
+  const route = useRouter();
 
-  console.log(data);
+  const handleDelete = async () => {
+    console.log("Delete User");
+    setIsDeleting(true);
+
+    try {
+      const res = await deleteUser(userId).unwrap();
+
+      console.log(res);
+
+      if (res.success) {
+        console.log("User deleted successfully");
+        route.push("/dashboard/suppliers");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div>
@@ -37,10 +74,75 @@ export default function UserAccount({ userId }: string) {
             </p>
           </div>
         </div>
-        <Button className="bg-[#00A9EA] capitalize">Delete {data?.role}</Button>
+
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button className="bg-[#00A9EA] capitalize">
+              Delete {data?.role}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Are you sure you want to delete buyer Account?
+              </AlertDialogTitle>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>No</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {isDeleting ? "Deleting..." : "Yes"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
-      
+      <CompanyInformation
+        companyData={companyData}
+        user={
+          data
+            ? {
+                isVerified: data.isVerified || false,
+                firstName: data.firstName || "",
+                lastName: data.lastName || "",
+                email: data.email || "",
+                phoneNumber: data.phoneNumber || "",
+              }
+            : {
+                isVerified: false,
+                firstName: "",
+                lastName: "",
+                email: "",
+                phoneNumber: "",
+              }
+        }
+      />
+
+      <BusinessInfo companyData={companyData} />
+      <CompanyDetails companyData={companyData} />
+
+      <ContactAndOwnerInfo
+        companyData={companyData}
+        user={
+          data
+            ? {
+                firstName: data.firstName || "",
+                lastName: data.lastName || "",
+                email: data.email || "",
+                phoneNumber: data.phoneNumber || "",
+              }
+            : {
+                firstName: "",
+                lastName: "",
+                email: "",
+                phoneNumber: "",
+              }
+        }
+      />
     </div>
   );
 }
