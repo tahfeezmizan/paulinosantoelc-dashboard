@@ -54,7 +54,7 @@ const verificationData = [
   },
 ];
 
-export function VerificationTable() {
+export function VerificationList() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">

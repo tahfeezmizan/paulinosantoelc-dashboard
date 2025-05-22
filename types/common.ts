@@ -73,3 +73,37 @@ export interface I_ErrorResponse {
     error: I_Error | I_Error[];
   };
 }
+
+export interface P_Data {
+  id: string;
+  name: string;
+  email: string;
+}
+
+
+export interface CompanyDataType {
+  name: string;
+  phoneNumber: string;
+  businessIdentification?: string;
+  companyEstablish?: string;
+  companyName?: string;
+  companyWebsite?: string;
+  countryName?: string;
+  numberOfEmployees?: string | number;
+  businessCategory: string;
+  businessType: any;
+  subCategory: string;
+  about: string;
+  mainProducts: string;
+  companyAddress: string;
+  zipCode: string;
+  district: string;
+  fullName: string;
+  isVerified: boolean;
+  ownerName: string;
+  ownerEmail: string;
+  ownerPhone: string;
+  tradeLicense: string;
+  logo: string;
+  controlPolicy: boolean;
+}

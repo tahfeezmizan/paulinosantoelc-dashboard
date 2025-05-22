@@ -345,4 +345,6 @@ export function PaymentList() {
       );
     }
   }
+
+  return content
 }
