@@ -148,7 +148,7 @@ export function SupplierList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const { data, isLoading, isFetching, error } = useGetAllSpplierQuery(null);
+  const { data, isLoading, isFetching, error, refetch } = useGetAllSpplierQuery(null);
 
   // console.log(" supplier data", data);
 
@@ -251,6 +251,7 @@ export function SupplierList() {
                       key={supplier.id}
                       supplier={supplier}
                       index={index}
+                      refetch={refetch}
                     />
                   ))}
                 </TableBody>

@@ -80,7 +80,6 @@ export interface P_Data {
   email: string;
 }
 
-
 export interface CompanyDataType {
   name: string;
   phoneNumber: string;
@@ -107,3 +106,27 @@ export interface CompanyDataType {
   logo: string;
   controlPolicy: boolean;
 }
+
+export type SubscriptionType = {
+  id: string;
+  userId: string;
+  paymentIntentsId: string;
+  planId: string;
+  isSubscribe: boolean;
+  createdAt: string;
+  updatedAt: string;
+  expiresAt: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+  };
+  plan: {
+    id: string;
+    planName: string;
+    price: number;
+    duration: string; 
+  };
+};

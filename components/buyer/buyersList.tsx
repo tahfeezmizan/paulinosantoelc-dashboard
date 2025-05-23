@@ -140,7 +140,8 @@ export function BuyersList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const { data, isLoading, isFetching, error } = useGetAllBuyersQuery(null);
+  const { data, isLoading, isFetching, error, refetch } =
+    useGetAllBuyersQuery(null);
 
   // console.log("Buyers Data ", data);
 
@@ -181,174 +182,183 @@ export function BuyersList() {
     } else {
       content = (
         <div className="space-y-4">
-        {/* Search and Filter */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Buyer List</h1>
-            <p className="text-gray-500">View, manage Buyer List.</p>
-          </div>
-
-          <div className="flex-1 flex items-center justify-end gap-5 max-w-sm">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-              <Input
-                type="search"
-                placeholder="Search"
-                className="pl-8 bg-white"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+          {/* Search and Filter */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">Buyer List</h1>
+              <p className="text-gray-500">View, manage Buyer List.</p>
             </div>
-            <FilterDropdowns />
-          </div>
-        </div>
 
-        {/* buyerss Table */}
-        <div className="bg-white rounded-md border shadow-sm">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[60px] text-[#0F172A] font-semibold">
-                    SL.
-                  </TableHead>
-                  <TableHead className="text-[#0F172A] font-semibold">
-                    Buyers Name
-                  </TableHead>
-                  <TableHead className="text-[#0F172A] font-semibold">
-                    Country
-                  </TableHead>
-                  <TableHead className="text-[#0F172A] font-semibold">
-                    Company Name
-                  </TableHead>
-                  <TableHead className="text-[#0F172A] font-semibold">
-                    Trade License
-                  </TableHead>
-                  <TableHead className="text-[#0F172A] font-semibold">
-                    Products
-                  </TableHead>
-                  <TableHead className=" w-[80px] text-[#0F172A] font-semibold">
-                    Action
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {buyersList.map((buyers: User, index: number) => (
-                  <BuyerTable buyer={buyers} key={buyers.id} index={index} />
-                ))}
-              </TableBody>
-            </Table>
+            <div className="flex-1 flex items-center justify-end gap-5 max-w-sm">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                <Input
+                  type="search"
+                  placeholder="Search"
+                  className="pl-8 bg-white"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <FilterDropdowns />
+            </div>
           </div>
 
-          {/* Pagination */}
-        </div>
-        <div className="flex items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span>Show</span>
-            <Select
-              value={itemsPerPage.toString()}
-              onValueChange={(value) => {
-                setItemsPerPage(Number.parseInt(value));
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={itemsPerPage.toString()} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-            <span>from {totalItems}</span>
-          </div>
+          {/* buyerss Table */}
+          <div className="bg-white rounded-md border shadow-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[60px] text-[#0F172A] font-semibold">
+                      SL.
+                    </TableHead>
+                    <TableHead className="text-[#0F172A] font-semibold">
+                      Buyers Name
+                    </TableHead>
+                    <TableHead className="text-[#0F172A] font-semibold">
+                      Country
+                    </TableHead>
+                    <TableHead className="text-[#0F172A] font-semibold">
+                      Company Name
+                    </TableHead>
+                    <TableHead className="text-[#0F172A] font-semibold">
+                      Trade License
+                    </TableHead>
+                    <TableHead className="text-[#0F172A] font-semibold">
+                      Products
+                    </TableHead>
+                    <TableHead className=" w-[80px] text-[#0F172A] font-semibold">
+                      Action
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {buyersList.map((buyers: User, index: number) => (
+                    <BuyerTable
+                      buyer={buyers}
+                      key={buyers.id}
+                      index={index}
+                      refetch={refetch}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
 
-          <div className="">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (currentPage > 1) setCurrentPage(currentPage - 1);
-                    }}
-                    className={
-                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
+            {/* Pagination */}
+          </div>
+          <div className="flex items-center justify-between px-4 py-4">
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <span>Show</span>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => {
+                  setItemsPerPage(Number.parseInt(value));
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="h-8 w-[70px]">
+                  <SelectValue placeholder={itemsPerPage.toString()} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+              <span>from {totalItems}</span>
+            </div>
+
+            <div className="">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage > 1) setCurrentPage(currentPage - 1);
+                      }}
+                      className={
+                        currentPage === 1
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+
+                  {Array.from({ length: Math.min(5, totalPages) }).map(
+                    (_, i) => {
+                      let pageNumber: number;
+
+                      // Logic to show correct page numbers with ellipsis
+                      if (totalPages <= 5) {
+                        pageNumber = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNumber = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNumber = totalPages - 4 + i;
+                      } else {
+                        pageNumber = currentPage - 2 + i;
+                      }
+
+                      if (
+                        pageNumber === 1 ||
+                        pageNumber === totalPages ||
+                        (pageNumber >= currentPage - 1 &&
+                          pageNumber <= currentPage + 1)
+                      ) {
+                        return (
+                          <PaginationItem key={pageNumber}>
+                            <PaginationLink
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentPage(pageNumber);
+                              }}
+                              isActive={currentPage === pageNumber}
+                            >
+                              {pageNumber}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      } else if (
+                        pageNumber === 2 ||
+                        pageNumber === totalPages - 1
+                      ) {
+                        return (
+                          <PaginationItem key={pageNumber}>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        );
+                      }
+                      return null;
                     }
-                  />
-                </PaginationItem>
+                  )}
 
-                {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-                  let pageNumber: number;
-
-                  // Logic to show correct page numbers with ellipsis
-                  if (totalPages <= 5) {
-                    pageNumber = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNumber = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNumber = totalPages - 4 + i;
-                  } else {
-                    pageNumber = currentPage - 2 + i;
-                  }
-
-                  if (
-                    pageNumber === 1 ||
-                    pageNumber === totalPages ||
-                    (pageNumber >= currentPage - 1 &&
-                      pageNumber <= currentPage + 1)
-                  ) {
-                    return (
-                      <PaginationItem key={pageNumber}>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(pageNumber);
-                          }}
-                          isActive={currentPage === pageNumber}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  } else if (
-                    pageNumber === 2 ||
-                    pageNumber === totalPages - 1
-                  ) {
-                    return (
-                      <PaginationItem key={pageNumber}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    );
-                  }
-                  return null;
-                })}
-
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (currentPage < totalPages)
-                        setCurrentPage(currentPage + 1);
-                    }}
-                    className={
-                      currentPage === totalPages
-                        ? "pointer-events-none opacity-50"
-                        : ""
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage < totalPages)
+                          setCurrentPage(currentPage + 1);
+                      }}
+                      className={
+                        currentPage === totalPages
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
           </div>
         </div>
-      </div>
-      )
+      );
     }
   }
 

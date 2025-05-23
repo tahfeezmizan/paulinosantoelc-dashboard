@@ -4,10 +4,10 @@ const paymentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     //get All user
     getAllPayments: builder.query({
-      query: () => ({
-        url: `/subscription`,
+      query: ({page, limit}) => ({
+      url: `/subscription?page=${page}&limit=${limit}`,
       }),
-      transformResponse: ({ data }) => data,
+      // transformResponse: ({ data }) => data,
     }),
   }),
 });

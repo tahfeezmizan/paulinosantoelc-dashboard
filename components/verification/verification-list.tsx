@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -10,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { FileText } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const verificationData = [
   {
@@ -55,13 +58,17 @@ const verificationData = [
 ];
 
 export function VerificationList() {
+  const pathName = usePathname();
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Verification Request</CardTitle>
-        <Button variant="outline" size="sm">
-          <Link href="/dashboard/verification">View All</Link>
-        </Button>
+        {pathName === "/dashboard/verification" ? "" : (
+          <Button variant="outline" size="sm">
+            <Link href="/dashboard/verification">View All</Link>
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
@@ -79,7 +86,7 @@ export function VerificationList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {verificationData.map((item) => (
+              {verificationData?.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell>{item.id}</TableCell>
                   <TableCell>{item.name}</TableCell>

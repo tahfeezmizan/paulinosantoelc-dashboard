@@ -1,8 +1,9 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
+
+
 import {
-  Pagination,
+  // Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
@@ -20,152 +21,31 @@ import {
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { useGetAllPaymentsQuery } from "@/redux/api/paymentsApi";
-import { I_ErrorResponse, User } from "@/types/common";
-import { Search } from "lucide-react";
+import { I_ErrorResponse, SubscriptionType, User } from "@/types/common";
 import { useState } from "react";
 import PaymentTable from "./payment-table";
-
-// Define the payment data type
-interface Payment {
-  id: string;
-  date: string;
-  buyer: string;
-  country: string;
-  company: string;
-  type: string;
-  plan: string;
-  method: string;
-}
-
-// Sample payment data
-const paymentData: Payment[] = [
-  {
-    id: "01",
-    date: "25/02/2025",
-    buyer: "Jenny Wilson",
-    country: "USA",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    plan: "Monthly",
-    method: "Paypal",
-  },
-  {
-    id: "02",
-    date: "25/02/2025",
-    buyer: "Bessie Cooper",
-    country: "Tajikistan",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    plan: "6 Month",
-    method: "Paypal",
-  },
-  {
-    id: "03",
-    date: "25/02/2025",
-    buyer: "Jane Cooper",
-    country: "Greece",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    plan: "1 Year",
-    method: "Paypal",
-  },
-  {
-    id: "04",
-    date: "25/02/2025",
-    buyer: "Annette Black",
-    country: "Central African",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    plan: "Monthly",
-    method: "Paypal",
-  },
-  {
-    id: "05",
-    date: "25/02/2025",
-    buyer: "Dianne Russell",
-    country: "Russian",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    plan: "12 Month",
-    method: "Paypal",
-  },
-  {
-    id: "06",
-    date: "25/02/2025",
-    buyer: "Marvin McKinney",
-    country: "Principe",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    plan: "8 Month",
-    method: "Paypal",
-  },
-  {
-    id: "07",
-    date: "25/02/2025",
-    buyer: "Jerome Bell",
-    country: "Bahrain",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    plan: "6 Month",
-    method: "Paypal",
-  },
-  {
-    id: "08",
-    date: "25/02/2025",
-    buyer: "Arlene McCoy",
-    country: "Viet Nam",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    plan: "Yearly",
-    method: "Paypal",
-  },
-  {
-    id: "09",
-    date: "25/02/2025",
-    buyer: "Guy Hawkins",
-    country: "Monaco",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    plan: "6 Month",
-    method: "Paypal",
-  },
-];
+import Pagination from "../pegination/pagination";
 
 export function PaymentList() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const { data, isLoading, isFetching, error } = useGetAllPaymentsQuery({
+    page: currentPage,
+  });
 
-  const { data, isLoading, isFetching, error } = useGetAllPaymentsQuery(null);
+  const paymentData = data?.data;
+  console.log("Payment", paymentData);
 
-  console.log("All Payment", data);
+  const payments: SubscriptionType[] = data?.data?.users || [];
 
-  // Filter payments based on search query
-  const filteredPayments = paymentData.filter(
-    (payment) =>
-      payment.buyer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      payment.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      payment.country.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const totalPages = data?.meta?.totalPage || 1;
 
-  // Calculate pagination
-  const totalItems = 286; // Total number of payments (from the image)
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedPayments = filteredPayments.slice(0, itemsPerPage); // Using the sample data for display
 
-  // decide what to display
   let content;
-
-  if (isLoading || isFetching) {
-    content = <p>Loading...</p>;
-  }
 
   if (error) {
     console.log(error);
@@ -178,9 +58,8 @@ export function PaymentList() {
   }
 
   if (!isLoading && !isFetching && !error) {
-    const paymentsLists = data?.users as User[];
-    console.log("Payments content", paymentsLists);
-    if (paymentsLists.length === 0) {
+    const paymentsLists = data?.data as SubscriptionType[];
+    if (paymentsLists?.length === 0) {
       content = <p>No Payment Found</p>;
     } else {
       content = (
@@ -191,19 +70,6 @@ export function PaymentList() {
               <h2 className="text-2xl font-bold text-gray-800">
                 Payment History
               </h2>
-
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                  <Input
-                    type="search"
-                    placeholder="Search"
-                    className="pl-8 bg-white w-[200px] md:w-[250px]"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-              </div>
             </div>
 
             {/* Payment Table */}
@@ -212,26 +78,57 @@ export function PaymentList() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[60px]">SL.</TableHead>
-                      <TableHead>Buyer Name</TableHead>
-                      <TableHead>Payment Date</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Subscription Plan</TableHead>
-                      <TableHead>Method</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead className="w-[60px] text-[#0F172A] font-semibold">
+                        SL.
+                      </TableHead>
+                      <TableHead className="text-[#0F172A] font-semibold">
+                        Name
+                      </TableHead>
+                      <TableHead className="text-[#0F172A] font-semibold">
+                        Payment Date
+                      </TableHead>
+                      <TableHead className="text-[#0F172A] font-semibold">
+                        Amount
+                      </TableHead>
+                      <TableHead className="text-[#0F172A] font-semibold">
+                        Subscription Plan
+                      </TableHead>
+                      <TableHead className="text-[#0F172A] font-semibold">
+                        Start Date
+                      </TableHead>
+                      <TableHead className="text-[#0F172A] font-semibold">
+                        End Date
+                      </TableHead>
+                      <TableHead className="text-[#0F172A] font-semibold">
+                        Duration
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
+
                   <TableBody>
-                    {paginatedPayments.map((payment) => (
-                      <PaymentTable key={payment.id} payment={payment} />
-                    ))}
+                    {Array.isArray(paymentData) &&
+                      paymentData.map(
+                        (payment: SubscriptionType, index: number) => (
+                          <PaymentTable
+                            key={payment?.id || index}
+                            payment={payment}
+                            index={index + (currentPage - 1)}
+                          />
+                        )
+                      )}
                   </TableBody>
                 </Table>
               </div>
 
               {/* Pagination */}
             </div>
-            <div className="flex items-center justify-between px-4 py-4 border-t">
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+            {/* <div className="flex items-center justify-between px-4 py-4 border-t">
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <span>Show</span>
                 <Select
@@ -339,12 +236,12 @@ export function PaymentList() {
                   </PaginationContent>
                 </Pagination>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       );
     }
   }
 
-  return content
+  return content;
 }

@@ -21,15 +21,19 @@ import BusinessInfo from "./business-info";
 import CompanyDetails from "./company-details";
 import CompanyInformation from "./company-information";
 import ContactAndOwnerInfo from "./contact-and-owner-info";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function UserAccount({ userId }: string) {
   const [isDeleting, setIsDeleting] = useState(false);
   const { data } = useGetUserByIdQuery(userId);
   const companyData: CompanyDataType = data?.companyInfo || {};
-  const [deleteUser] = useDeleteUserMutation();
   const route = useRouter();
-
+  const pathName = usePathname();
+  const basePath = pathName.split("/").slice(0, 3).join("/");
+  
+  console.log(basePath);
+  
+  const [deleteUser] = useDeleteUserMutation();
   const handleDelete = async () => {
     console.log("Delete User");
     setIsDeleting(true);
@@ -41,7 +45,7 @@ export default function UserAccount({ userId }: string) {
 
       if (res.success) {
         console.log("User deleted successfully");
-        route.push("/dashboard/suppliers");
+        route.push(basePath);
       }
     } catch (error) {
       console.error("Delete error:", error);
