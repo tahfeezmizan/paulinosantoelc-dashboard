@@ -1,12 +1,18 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, ShieldCheck, Package } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Package, ShieldCheck, Users } from "lucide-react";
+
+
 
 export function StatsCards() {
+  // const { data } = useGetAllUserQuery(null);
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium text-gray-500">Total Supplier</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-500">
+            Total Supplier
+          </CardTitle>
           <Users className="h-5 w-5 text-gray-500" />
         </CardHeader>
         <CardContent>
@@ -16,7 +22,9 @@ export function StatsCards() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium text-gray-500">Total Buyer</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-500">
+            Total Buyer
+          </CardTitle>
           <Users className="h-5 w-5 text-gray-500" />
         </CardHeader>
         <CardContent>
@@ -26,7 +34,9 @@ export function StatsCards() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium text-gray-500">Verify Pending</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-500">
+            Verify Pending
+          </CardTitle>
           <ShieldCheck className="h-5 w-5 text-gray-500" />
         </CardHeader>
         <CardContent>
@@ -36,7 +46,9 @@ export function StatsCards() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium text-gray-500">Total Product</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-500">
+            Total Product
+          </CardTitle>
           <Package className="h-5 w-5 text-gray-500" />
         </CardHeader>
         <CardContent>
@@ -44,5 +56,5 @@ export function StatsCards() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

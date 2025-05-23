@@ -1,7 +1,7 @@
 // components/Pagination.tsx
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 interface PaginationProps {
   currentPage: number;
@@ -72,4 +72,3 @@ const Pagination: React.FC<PaginationProps> = ({
 };
 
 export default Pagination;
-

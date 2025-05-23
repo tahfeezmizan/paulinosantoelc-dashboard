@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useGetAllUserQuery } from "@/redux/api/userApi";
 import { FileText } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -58,13 +59,25 @@ const verificationData = [
 ];
 
 export function VerificationList() {
+  const { data } = useGetAllUserQuery(null);
+  const requestedUser = data?.data?.users;
+
+  const reqUser = requestedUser?.filter(
+    (user) => user?.verifiedAccount === "REQUESTED"
+  );
+  console.log("Verification", data?.data?.users);
+
+  console.log("Verification", reqUser);
+
   const pathName = usePathname();
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Verification Request</CardTitle>
-        {pathName === "/dashboard/verification" ? "" : (
+        {pathName === "/dashboard/verification" ? (
+          ""
+        ) : (
           <Button variant="outline" size="sm">
             <Link href="/dashboard/verification">View All</Link>
           </Button>
@@ -86,12 +99,12 @@ export function VerificationList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {verificationData?.map((item) => (
+              {reqUser?.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell>{item.id}</TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.country}</TableCell>
-                  <TableCell>{item.company}</TableCell>
+                  <TableCell>{item.length}</TableCell>
+                  <TableCell>{ item.firstName + " " + item.lastName}</TableCell>
+                  <TableCell>{item.companyInfo?.countryName}</TableCell>
+                  <TableCell>{item.companyInfo?.companyName}</TableCell>
                   <TableCell>{item.type}</TableCell>
                   <TableCell>
                     <Button
@@ -103,7 +116,7 @@ export function VerificationList() {
                       Image
                     </Button>
                   </TableCell>
-                  <TableCell>{item.products}</TableCell>
+                  <TableCell>{item?.companyInfo?.mainProducts}</TableCell>
                   <TableCell>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
                       <svg

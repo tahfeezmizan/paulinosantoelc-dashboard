@@ -4,14 +4,16 @@ const supplierApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     //get All user
     getAllSpplier: builder.query({
-      // Accepts an object with both values dynamically from the frontend
-      // query: ({ firstName, lastName }: { firstName: string; lastName: string }) => ({ 
-      //  url: `/user?role=SUPPLIER&firstName=${firstName}&lastName=${lastName}`,
-      // }),
-      query: () => ({ 
-       url: `/user?role=SUPPLIER`,
-      }),
-      transformResponse: ({data}) => data
+      query: ({ page, limit, searchTerm }) => {
+        const url = searchTerm
+          ? `/user?role=SUPPLIER&page=${page}&limit=${limit}&searchTerm=${searchTerm}`
+          : `/user?role=SUPPLIER&page=${page}&limit=${limit}`;
+
+        return {
+          url,
+          method: "GET",
+        };
+      },
     }),
   }),
 });

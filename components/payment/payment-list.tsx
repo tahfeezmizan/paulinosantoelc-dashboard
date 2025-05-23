@@ -1,23 +1,5 @@
 "use client";
 
-
-
-import {
-  // Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -26,10 +8,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetAllPaymentsQuery } from "@/redux/api/paymentsApi";
-import { I_ErrorResponse, SubscriptionType, User } from "@/types/common";
+import { I_ErrorResponse, SubscriptionType } from "@/types/common";
 import { useState } from "react";
-import PaymentTable from "./payment-table";
 import Pagination from "../pegination/pagination";
+import PaymentTable from "./payment-table";
 
 export function PaymentList() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,9 +22,9 @@ export function PaymentList() {
   const paymentData = data?.data;
   console.log("Payment", paymentData);
 
-  const payments: SubscriptionType[] = data?.data?.users || [];
-
   const totalPages = data?.meta?.totalPage || 1;
+  
+  // const payments: SubscriptionType[] = data?.data?.users || [];
 
 
   let content;
@@ -128,115 +110,6 @@ export function PaymentList() {
               totalPages={totalPages}
               onPageChange={(page) => setCurrentPage(page)}
             />
-            {/* <div className="flex items-center justify-between px-4 py-4 border-t">
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span>Show</span>
-                <Select
-                  value={itemsPerPage.toString()}
-                  onValueChange={(value) => {
-                    setItemsPerPage(Number.parseInt(value));
-                    setCurrentPage(1);
-                  }}
-                >
-                  <SelectTrigger className="h-8 w-[70px]">
-                    <SelectValue placeholder={itemsPerPage.toString()} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">5</SelectItem>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span>from {totalItems}</span>
-              </div>
-
-              <div className="">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (currentPage > 1) setCurrentPage(currentPage - 1);
-                        }}
-                        className={
-                          currentPage === 1
-                            ? "pointer-events-none opacity-50"
-                            : ""
-                        }
-                      />
-                    </PaginationItem>
-
-                    {Array.from({ length: Math.min(5, totalPages) }).map(
-                      (_, i) => {
-                        let pageNumber: number;
-
-                        // Logic to show correct page numbers with ellipsis
-                        if (totalPages <= 5) {
-                          pageNumber = i + 1;
-                        } else if (currentPage <= 3) {
-                          pageNumber = i + 1;
-                        } else if (currentPage >= totalPages - 2) {
-                          pageNumber = totalPages - 4 + i;
-                        } else {
-                          pageNumber = currentPage - 2 + i;
-                        }
-
-                        if (
-                          pageNumber === 1 ||
-                          pageNumber === totalPages ||
-                          (pageNumber >= currentPage - 1 &&
-                            pageNumber <= currentPage + 1)
-                        ) {
-                          return (
-                            <PaginationItem key={pageNumber}>
-                              <PaginationLink
-                                href="#"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  setCurrentPage(pageNumber);
-                                }}
-                                isActive={currentPage === pageNumber}
-                              >
-                                {pageNumber}
-                              </PaginationLink>
-                            </PaginationItem>
-                          );
-                        } else if (
-                          pageNumber === 2 ||
-                          pageNumber === totalPages - 1
-                        ) {
-                          return (
-                            <PaginationItem key={pageNumber}>
-                              <PaginationEllipsis />
-                            </PaginationItem>
-                          );
-                        }
-                        return null;
-                      }
-                    )}
-
-                    <PaginationItem>
-                      <PaginationNext
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (currentPage < totalPages)
-                            setCurrentPage(currentPage + 1);
-                        }}
-                        className={
-                          currentPage === totalPages
-                            ? "pointer-events-none opacity-50"
-                            : ""
-                        }
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            </div> */}
           </div>
         </div>
       );

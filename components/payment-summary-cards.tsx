@@ -47,7 +47,7 @@ export default function PaymentSummaryCards() {
             <div>
               <p className="text-gray-500 mb-1">Total Amount</p>
               <h2 className="text-3xl font-bold">
-                {/* ${totalAmount} */}50
+                {/* ${totalAmount} */}$450
                 <span className="text-xl">.25</span>
               </h2>
             </div>
