@@ -130,3 +130,10 @@ export type SubscriptionType = {
     duration: string; 
   };
 };
+
+
+export type OverviewDataType = {
+  label: string;
+  Buyer: number;
+  Supplier: number;
+};

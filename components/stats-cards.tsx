@@ -1,14 +1,16 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useGetAnalyticsQuery } from "@/redux/api/analyticsApi";
 import { Package, ShieldCheck, Users } from "lucide-react";
 
-
-
 export function StatsCards() {
-  // const { data } = useGetAllUserQuery(null);
+  const { data } = useGetAnalyticsQuery({});
+  const analytics = data?.data;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <Card className="bg-[#dcf1ea] border-none rounded-lg">
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle className="text-sm font-medium text-gray-500">
             Total Supplier
@@ -16,11 +18,11 @@ export function StatsCards() {
           <Users className="h-5 w-5 text-gray-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">$2,500</div>
+          <div className="text-2xl font-bold">{analytics?.totalSupplier}</div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-[#d9eef8] border-none rounded-lg">
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle className="text-sm font-medium text-gray-500">
             Total Buyer
@@ -28,11 +30,11 @@ export function StatsCards() {
           <Users className="h-5 w-5 text-gray-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">1,500</div>
+          <div className="text-2xl font-bold">{analytics?.totalBuyer}</div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-[#e0e7fa] border-none rounded-lg">
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle className="text-sm font-medium text-gray-500">
             Verify Pending
@@ -40,11 +42,13 @@ export function StatsCards() {
           <ShieldCheck className="h-5 w-5 text-gray-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">35,00</div>
+          <div className="text-2xl font-bold">
+            {analytics?.verifiedAccountRequests}
+          </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-[#f2e5e1] border-none rounded-lg">
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle className="text-sm font-medium text-gray-500">
             Total Product
@@ -52,7 +56,7 @@ export function StatsCards() {
           <Package className="h-5 w-5 text-gray-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">45</div>
+          <div className="text-2xl font-bold">{analytics?.totalProduct}</div>
         </CardContent>
       </Card>
     </div>

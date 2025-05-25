@@ -21,6 +21,15 @@ const userApi = baseApi.injectEndpoints({
       transformResponse: (response: any) => response.data,
     }),
 
+    // Update User By Id
+    updateVerifyStatus: builder.mutation({
+      query: ({ id, verifyStatus }) => ({
+        url: `/user/confirm-verify/${id}`,
+        method: "PUT",
+        body: { verifyStatus },
+      }),
+    }),
+
     // get User By Id
     getUserById: builder.query({
       query: (id) => ({
@@ -44,5 +53,6 @@ export const {
   useGetAllUserQuery,
   useGetUserByIdQuery,
   useGetLoggedInUserQuery,
+  useUpdateVerifyStatusMutation,
   useDeleteUserMutation,
 } = userApi;

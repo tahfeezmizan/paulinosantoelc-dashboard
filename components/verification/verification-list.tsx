@@ -10,24 +10,63 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useGetAllUserQuery } from "@/redux/api/userApi";
+import {
+  useGetAllUserQuery,
+  useUpdateVerifyStatusMutation,
+} from "@/redux/api/userApi";
 import { User } from "@/types/common";
-import { FileText  } from "lucide-react";
+import { Check, FileText, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 export function VerificationList() {
   const { data } = useGetAllUserQuery(null);
   const requestedUser = data?.data?.users;
+  const [updateVerifyStatus] = useUpdateVerifyStatusMutation();
 
   const reqUser = requestedUser?.filter(
     (user: User) => user?.verifiedAccount === "REQUESTED"
   );
-  console.log("Verification", data?.data?.users);
-
-  console.log("Verification", reqUser);
 
   const pathName = usePathname();
+
+  // console.log("Vefify",data?.data?.users);
+
+  const handleAcceptRequest = async (userId: string) => {
+    console.log("Accepted", userId);
+
+    try {
+      const res = await updateVerifyStatus({
+        id: userId,
+        verifyStatus: "ACCEPTED",
+      }).unwrap();
+
+      console.log("Accepted", res);
+
+      if (res.success === true) {
+        toast.success("User verified successfully");
+      }
+    } catch (error) {
+      console.error("Update error:", error);
+    }
+  };
+
+  const handleRejectRequest = (userId: string) => {
+    console.log("Rejected", userId);
+
+    try {
+      const res = updateVerifyStatus({
+        id: userId,
+        verifyStatus: "REJECTED",
+      }).unwrap();
+      if (res.success === true) {
+        toast.success("User rejected successfully");
+      }
+    } catch (error) {
+      console.error("Update error:", error);
+    }
+  };
 
   return (
     <Card>
@@ -86,23 +125,19 @@ export function VerificationList() {
                     <TableCell>
                       {user?.companyInfo?.mainProducts || "N/A"}
                     </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <svg
-                          width="15"
-                          height="15"
-                          viewBox="0 0 15 15"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M1.5 3C1.22386 3 1 3.22386 1 3.5C1 3.77614 1.22386 4 1.5 4H13.5C13.7761 4 14 3.77614 14 3.5C14 3.22386 13.7761 3 13.5 3H1.5ZM1.5 7C1.22386 7 1 7.22386 1 7.5C1 7.77614 1.22386 8 1.5 8H13.5C13.7761 8 14 7.77614 14 7.5C14 7.22386 13.7761 7 13.5 7H1.5ZM1 11.5C1 11.2239 1.22386 11 1.5 11H13.5C13.7761 11 14 11.2239 14 11.5C14 11.7761 13.7761 12 13.5 12H1.5C1.22386 12 1 11.7761 1 11.5Z"
-                            fill="currentColor"
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                          ></path>
-                        </svg>
-                      </Button>
+                    <TableCell className="flex gap-3 items-center ">
+                      <button
+                        onClick={() => handleRejectRequest(user?.id)}
+                        className="bg-red-500 p-1 text-white rounded-full"
+                      >
+                        <X className="h-4 w-4 " />
+                      </button>
+                      <button
+                        onClick={() => handleAcceptRequest(user?.id)}
+                        className="bg-green-500 p-1 text-white rounded-full"
+                      >
+                        <Check className="h-4 w-4 " />
+                      </button>
                     </TableCell>
                   </TableRow>
                 ))}
