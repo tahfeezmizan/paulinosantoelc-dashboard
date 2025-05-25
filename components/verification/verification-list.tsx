@@ -11,59 +11,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetAllUserQuery } from "@/redux/api/userApi";
-import { FileText } from "lucide-react";
+import { User } from "@/types/common";
+import { FileText  } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const verificationData = [
-  {
-    id: "01",
-    name: "Jenny Wilson",
-    country: "Bangladesh",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    products: "Computer IT",
-  },
-  {
-    id: "02",
-    name: "Arlene McCoy",
-    country: "USA",
-    company: "Kappa - Kappa Corporation",
-    type: "Buyer",
-    products: "Computer IT",
-  },
-  {
-    id: "03",
-    name: "Dianne Russell",
-    country: "Canada",
-    company: "Kappa - Kappa Corporation",
-    type: "Supplier",
-    products: "Computer IT",
-  },
-  {
-    id: "04",
-    name: "Guy Hawkins",
-    country: "Landon",
-    company: "Kappa - Kappa Corporation",
-    type: "Buyer",
-    products: "Computer IT",
-  },
-  {
-    id: "05",
-    name: "Kathryn Murphy",
-    country: "Bangladesh",
-    company: "Kappa - Kappa Corporation",
-    type: "Buyer",
-    products: "Computer IT",
-  },
-];
 
 export function VerificationList() {
   const { data } = useGetAllUserQuery(null);
   const requestedUser = data?.data?.users;
 
   const reqUser = requestedUser?.filter(
-    (user) => user?.verifiedAccount === "REQUESTED"
+    (user: User) => user?.verifiedAccount === "REQUESTED"
   );
   console.log("Verification", data?.data?.users);
 
@@ -99,44 +57,55 @@ export function VerificationList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {reqUser?.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.length}</TableCell>
-                  <TableCell>{ item.firstName + " " + item.lastName}</TableCell>
-                  <TableCell>{item.companyInfo?.countryName}</TableCell>
-                  <TableCell>{item.companyInfo?.companyName}</TableCell>
-                  <TableCell>{item.type}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="text-blue-500 p-0"
-                    >
-                      <FileText className="h-4 w-4 mr-1" />
-                      Image
-                    </Button>
-                  </TableCell>
-                  <TableCell>{item?.companyInfo?.mainProducts}</TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 15 15"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+              {Array.isArray(reqUser) &&
+                reqUser.map((user: User, index: number) => (
+                  <TableRow key={user?.id || index}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>
+                      {`${user?.firstName || ""} ${
+                        user?.lastName || ""
+                      }`.trim() || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {user?.companyInfo?.countryName || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {user?.companyInfo?.companyName || "N/A"}
+                    </TableCell>
+                    <TableCell>{user?.role || "N/A"}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="text-blue-500 p-0"
                       >
-                        <path
-                          d="M1.5 3C1.22386 3 1 3.22386 1 3.5C1 3.77614 1.22386 4 1.5 4H13.5C13.7761 4 14 3.77614 14 3.5C14 3.22386 13.7761 3 13.5 3H1.5ZM1.5 7C1.22386 7 1 7.22386 1 7.5C1 7.77614 1.22386 8 1.5 8H13.5C13.7761 8 14 7.77614 14 7.5C14 7.22386 13.7761 7 13.5 7H1.5ZM1 11.5C1 11.2239 1.22386 11 1.5 11H13.5C13.7761 11 14 11.2239 14 11.5C14 11.7761 13.7761 12 13.5 12H1.5C1.22386 12 1 11.7761 1 11.5Z"
-                          fill="currentColor"
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                        ></path>
-                      </svg>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        <FileText className="h-4 w-4 mr-1" />
+                        Image
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      {user?.companyInfo?.mainProducts || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <svg
+                          width="15"
+                          height="15"
+                          viewBox="0 0 15 15"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M1.5 3C1.22386 3 1 3.22386 1 3.5C1 3.77614 1.22386 4 1.5 4H13.5C13.7761 4 14 3.77614 14 3.5C14 3.22386 13.7761 3 13.5 3H1.5ZM1.5 7C1.22386 7 1 7.22386 1 7.5C1 7.77614 1.22386 8 1.5 8H13.5C13.7761 8 14 7.77614 14 7.5C14 7.22386 13.7761 7 13.5 7H1.5ZM1 11.5C1 11.2239 1.22386 11 1.5 11H13.5C13.7761 11 14 11.2239 14 11.5C14 11.7761 13.7761 12 13.5 12H1.5C1.22386 12 1 11.7761 1 11.5Z"
+                            fill="currentColor"
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                          ></path>
+                        </svg>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </div>

@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import type React from "react";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { SocketProvider } from "@/contenxt/SocketContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,10 +29,12 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <ReduxProvider>{children}</ReduxProvider>
-            <Toaster />
-          </AuthProvider>
+          <SocketProvider>
+            <AuthProvider>
+              <ReduxProvider>{children}</ReduxProvider>
+              <Toaster />
+            </AuthProvider>
+          </SocketProvider>
         </ThemeProvider>
       </body>
     </html>

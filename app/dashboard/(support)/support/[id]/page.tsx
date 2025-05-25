@@ -1,244 +1,175 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
-import type React from "react";
-
-import { useState, useRef, useEffect } from "react";
+import { useChat } from "@/hooks/use-chat";
+import { useGetAllUserQuery } from "@/redux/api/userApi";
+import { User } from "@/types/common";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import userImage from "@/public/chat-person.png";
 import { Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 
-// Types for our chat messages
-interface Message {
-  id: string;
-  content: string;
-  sender: "user" | "agent";
-  timestamp: string;
-  date: string;
-}
+export default function Page({ params }: { params: { id: string } }) {
+  const { data } = useGetAllUserQuery({});
+  const users = data?.data?.users;
+  const currentUserId = users?.id;
+  const otherUserId = params.id;
+  const [message, setMessage] = useState("");
 
-export default function Page({ params }: any) {
-  console.log("User Id", { params });
+  const singleUsers = users?.find((user: User) => user.id === otherUserId);
 
-  const [inputValue, setInputValue] = useState("");
+  console.log(singleUsers);
 
-  // State for chat messages
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      content: "Hello, I want to make enquiries about your product",
-      sender: "user",
-      timestamp: "12:55 am",
-      date: "20 January 2025",
-    },
-    {
-      id: "2",
-      content: "Hello Janet, thank you for reaching out",
-      sender: "agent",
-      timestamp: "12:57 am",
-      date: "20 January 2025",
-    },
-    {
-      id: "3",
-      content: "What do you need to know?",
-      sender: "agent",
-      timestamp: "12:57 am",
-      date: "20 January 2025",
-    },
-    {
-      id: "4",
-      content:
-        "I want to know if the price is negotiable, i need about 2 Units",
-      sender: "user",
-      timestamp: "12:55 am",
-      date: "Today",
-    },
-    {
-      id: "5",
-      content:
-        "I want to know if the price is negotiable, i need about 2 Units",
-      sender: "user",
-      timestamp: "12:55 am",
-      date: "Today",
-    },
-  ]);
+  const [isTyping, setIsTyping] = useState(false);
 
-  // Reference to the messages container for auto-scrolling
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Function to scroll to the bottom of the messages
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const { messages, typingStatus, sendMessage, setTyping, markAsRead } =
+    useChat();
+
+  // console.log("Interface", sendMessage);
 
   // Scroll to bottom when messages change
+
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+
+    // Mark messages as read when they're displayed
+
+    messages.forEach((msg) => {
+      if (msg.receiverId === currentUserId && !msg.isRead) {
+        markAsRead(msg.id, msg.chatroomId);
+      }
+
+      console.log(message);
+    });
   }, [messages]);
 
-  // Handle input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
+  console.log("send from my side", message);
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendMessage = () => {
+    if (message.trim()) {
+      sendMessage(otherUserId, message, (response) => {
+        if (response.status === "success") {
+          setMessage("");
 
-    if (inputValue.trim()) {
-      // Log the input value to console as requested
-      console.log("Message submitted:", inputValue);
-
-      // Create a new message
-      const newMessage: Message = {
-        id: Date.now().toString(),
-        content: inputValue,
-        sender: "user",
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-        date: "Today",
-      };
-
-      // Add the new message to the chat
-      setMessages([...messages, newMessage]);
-
-      // Clear the input field
-      setInputValue("");
+          setTyping(getRoomId(users.id, otherUserId), false);
+        }
+      });
     }
   };
 
-  // Group messages by date
-  const groupedMessages: { [key: string]: Message[] } = {};
-  messages.forEach((message) => {
-    if (!groupedMessages[message.date]) {
-      groupedMessages[message.date] = [];
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+
+      handleSendMessage();
     }
-    groupedMessages[message.date].push(message);
-  });
+  };
+
+  const getRoomId = (user1: string, user2: string) => {
+    return [user1, user2].sort().join("-");
+  };
 
   return (
-    <div className="flex flex-col bg-white overflow-hidden rounded-2xl h-full">
-      {/* Header */}
-      <div className="p-4 bg-white border-b flex items-center space-x-3">
-        <Avatar className="h-10 w-10">
-          <img src="/placeholder.svg?height=40&width=40" alt="Jane Doe" />
-        </Avatar>
-        <div>
-          <h3 className="font-medium">Jane Doe</h3>
-          <div className="flex items-center text-sm text-gray-500">
-            <span className="h-2 w-2 rounded-full bg-blue-500 mr-2"></span>
-            <span>Online</span>
-            <span className="ml-2">12:55 am</span>
+    <div className="flex flex-col h-full px-6 bg-white p-6 rounded-2xl">
+      <div className=" flex items-center gap-5 p-2 border-b pb-4">
+        <Image
+          src={singleUsers?.companyInfo?.logo || userImage}
+          alt={`${singleUsers?.logo} logo`}
+          className="object-cover w-14 h-14 rounded-md transition duration-300 ease-in-out hover:scale-105"
+          width={50}
+          height={50}
+          priority
+        />
+        <div className="">
+          <h1 className="text-xl font-medium">
+            {singleUsers?.firstName} {singleUsers?.lastName} -{" "}
+          </h1>
+
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>Online</span>
+            </div>
+            <p className="text-md text-gray-500">8:31 PM</p>
           </div>
         </div>
       </div>
-
-      {/* Chat messages */}
-      <div
-        className="flex-1 overflow-y-auto p-4 flex flex-col justify-end bg-gray-50"
-        ref={messagesEndRef}
-      >
-        <div className="space-y-4">
-          {Object.keys(groupedMessages).map((date) => (
-            <div key={date}>
-              {/* Date separator */}
-              <div className="flex justify-center my-4">
-                <div className="bg-gray-100 text-gray-600 text-sm px-4 py-1 rounded-full">
-                  {date}
-                </div>
-              </div>
-
-              {/* Messages for this date */}
-              {groupedMessages[date].map((message) => (
-                <div key={message.id} className="space-y-1">
-                  <div
-                    className={`flex ${
-                      message.sender === "agent"
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
-                  >
-                    <div
-                      className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                        message.sender === "agent"
-                          ? "bg-white text-gray-800 rounded-br-none"
-                          : "bg-gray-100 text-gray-800 rounded-bl-none"
-                      }`}
-                    >
-                      {message.content}
-                    </div>
-                  </div>
-                  <div
-                    className={`text-xs text-gray-500 ${
-                      message.sender === "agent" ? "text-right" : "text-left"
-                    }`}
-                  >
-                    {message.timestamp}
-                    {message.sender === "agent" && (
-                      <span className="inline-block ml-1 text-blue-500">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="inline"
-                        >
-                          <path d="M20 6L9 17l-5-5"></path>
-                        </svg>
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
+      <div className="flex-1 overflow-y-auto p-4">
+        {messages.map((msg) => (
+          <div
+            key={msg?.id}
+            className={`mb-4 ${
+              msg.senderId === currentUserId ? "text-right" : "text-left"
+            }`}
+          >
+            <div
+              className={`inline-block p-3 rounded-lg ${
+                msg.senderId === currentUserId
+                  ? "bg-[#E6F6FD] text-black"
+                  : "bg-gray-200"
+              }`}
+            >
+              {msg.content}
             </div>
-          ))}
-        </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {new Date(msg.createdAt).toLocaleTimeString()}
+              {msg.isRead && " ✓✓"}
+            </div>
+          </div>
+        ))}
+        {typingStatus?.isTyping && typingStatus.userId === otherUserId && (
+          <div className="text-left mb-4">
+            <div className="inline-block p-3 rounded-lg bg-gray-200">
+              {" "}
+              Typing...
+            </div>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message input */}
-      <form onSubmit={handleSubmit} className="p-3 border-t flex items-center">
-        <Button
-          type="button"
-          size="icon"
-          variant="ghost"
-          className="rounded-full h-10 w-10 text-blue-500"
+      <div className="flex p-4  items-center justify-between gap-4">
+        <div className=" w-full">
+          <textarea
+            value={message}
+            onChange={(e) => {
+              setMessage(e.target.value);
+              if (e.target.value) {
+                if (!isTyping) {
+                  setTyping(getRoomId(currentUserId, otherUserId), true);
+                  setIsTyping(true);
+                }
+              } else {
+                setTyping(getRoomId(currentUserId, otherUserId), false);
+                setIsTyping(false);
+              }
+            }}
+            onKeyDown={handleKeyDown}
+            onBlur={() => {
+              setTyping(getRoomId(currentUserId, otherUserId), false);
+              setIsTyping(false);
+            }}
+            className="w-full resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 px-4 py-3 rounded-md text-sm placeholder-gray-500 transition-all duration-200"
+            placeholder="Your Message"
+            rows={1}
+            style={{
+              minHeight: "44px",
+              maxHeight: "120px",
+            }}
+          />
+        </div>
+        <button
+          onClick={handleSendMessage}
+          disabled={!message.trim()}
+          className="px-6 py-3 bg-[#00A9EA] text-white rounded-md hover:bg-[#00A9EA] transition-all duration-200 font-medium text-sm min-w-[80px] flex items-center justify-center gap-2"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 5v14M5 12h14"></path>
-          </svg>
-        </Button>
-        <Input
-          value={inputValue}
-          onChange={handleInputChange}
-          placeholder="Your message"
-          className="flex-1 mx-2 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-        />
-        <Button
-          type="submit"
-          className="rounded-md bg-blue-500 hover:bg-blue-600 text-white"
-        >
-          Send <Send className="ml-2 h-4 w-4" />
-        </Button>
-      </form>
+          Send
+          <Send />
+        </button>
+      </div>
     </div>
   );
 }
