@@ -30,7 +30,7 @@ export function Header() {
       <div className="ml-auto flex flex-row-reverse items-center gap-4">
         <div className="hidden sm:block">
           <p className="text-sm font-medium">
-            {user?.firstName + " " + user?.lastName}
+            {user?.firstName + " " + user?.lastName || "Super Admin"}
           </p>
           <p className="text-xs text-[#94A3B8]">{user?.email}</p>
         </div>

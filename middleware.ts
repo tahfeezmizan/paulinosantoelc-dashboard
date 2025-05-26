@@ -5,32 +5,68 @@ export function middleware(request: NextRequest) {
   // Get the pathname of the request
   const path = request.nextUrl.pathname;
 
-  // Define paths that are considered public (accessible without authentication)
-  const isPublicPath = path === "/login";
+  // Define public paths that don't require authentication
+  const isPublicPath = path === "/login" || path === "/register" || path === "/";
 
-  // Check if user is authenticated by looking for the authentication cookie or token
-  // In a real app, you would validate the token on the server
-  const isAuthenticated =
-    request.cookies.has("isAuthenticated") ||
-    request.headers.get("authorization");
+  // Define protected paths that require authentication
+  const isProtectedPath = path.startsWith("/dashboard") || path.startsWith("/account") || path.startsWith("/profile");
 
-  console.log("Middleware", isAuthenticated);
+  // Check for authentication from multiple sources
+  const hasAuthCookie = request.cookies.has("isAuthenticated");
+  const hasAuthHeader = request.headers.get("authorization");
+  const hasTokenCookie = request.cookies.has("authToken") || request.cookies.has("token");
+  
+  // You can also check for specific cookie values if needed
+  const authCookieValue = request.cookies.get("isAuthenticated")?.value;
+  const isAuthCookieValid = authCookieValue === "true" || authCookieValue === "1";
 
-  // if (!isAuthenticated && !isPublicPath) {
-  //   return NextResponse.redirect(new URL("/login", request.url));
-  // }
+  // Consider user authenticated if any of these conditions are met
+  const isAuthenticated = hasAuthCookie || hasAuthHeader || hasTokenCookie || isAuthCookieValid;
 
-  // If the user is authenticated and trying to access the login page,
-  // redirect them to the dashboard
-  if (isAuthenticated && isPublicPath) {
+  console.log("Middleware Check:", {
+    path,
+    isPublicPath,
+    isProtectedPath,
+    hasAuthCookie,
+    hasAuthHeader,
+    hasTokenCookie,
+    authCookieValue,
+    isAuthenticated
+  });
+
+  // Redirect authenticated users away from login/register pages
+  if (isAuthenticated && (path === "/login" || path === "/register")) {
+    console.log("Redirecting authenticated user to dashboard");
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Otherwise, continue with the request
+  // Redirect unauthenticated users away from protected routes
+  if (!isAuthenticated && isProtectedPath) {
+    console.log("Redirecting unauthenticated user to login");
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // For root path, redirect based on authentication status
+  if (path === "/") {
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    } else {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+  }
+
+  // Continue with the request for all other cases
   return NextResponse.next();
 }
 
 // Configure the middleware to run on specific paths
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/login"],
+  matcher: [
+    "/",
+    "/dashboard/:path*",
+    "/account/:path*",
+    "/profile/:path*",
+    "/login",
+    "/register"
+  ],
 };
