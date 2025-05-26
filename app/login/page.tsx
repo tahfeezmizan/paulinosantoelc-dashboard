@@ -46,7 +46,7 @@ export default function LoginPage() {
       // Check if user is an admin
       if (role === "ADMIN" || role === "SUPER_ADMIN") {
         // User is an admin, proceed to dashboard
-        dispatch(setUser(res))
+                
         toast.success(res?.message || "Login successful")
         router.push("/dashboard")
       } else {

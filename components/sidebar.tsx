@@ -52,6 +52,8 @@ export function Sidebar() {
 
   const handleLogout = () => {
     logout();
+    localStorage.removeItem("email");
+    localStorage.removeItem("accessToken");
   };
 
   return (
