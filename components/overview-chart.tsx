@@ -27,16 +27,6 @@ import {
   YAxis,
 } from "recharts";
 
-const data = [
-  { label: "Sat", supplier: 200, buyer: 300 },
-  { label: "Sun", supplier: 400, buyer: 350 },
-  { label: "Mon", supplier: 800, buyer: 700 },
-  { label: "Tue", supplier: 650, buyer: 600 },
-  { label: "Wed", supplier: 700, buyer: 800 },
-  { label: "Thu", supplier: 900, buyer: 850 },
-  { label: "Fri", supplier: 1000, buyer: 700 },
-];
-
 export function OverviewChart() {
   const { data: OverviewData } = useOverviewChartQuery({});
   const analytics = OverviewData?.data;
