@@ -27,11 +27,11 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: FormValues) => {
-    console.log("Form Data:", data);
+    // console.log("Form Data:", data);
 
     try {
       const res = await user(data).unwrap();
-      console.log("API Response:", res?.data);
+      // console.log("API Response:", res?.data);
 
       // Check if user is an admin
       if (res.success === true) {

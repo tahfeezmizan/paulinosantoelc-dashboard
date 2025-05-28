@@ -60,7 +60,7 @@ export default function MessageList({
   );
   const [showChat, setShowChat] = useState(false);
 
-  console.log(messages);
+  // console.log(messages);
 
   // Handle socket connection and message receiving
   // useEffect(() => {

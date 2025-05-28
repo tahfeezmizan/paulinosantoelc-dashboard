@@ -19,7 +19,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   const singleUsers = users?.find((user: User) => user.id === otherUserId);
 
-  console.log(singleUsers);
+  // console.log(singleUsers);
 
   const [isTyping, setIsTyping] = useState(false);
 
@@ -42,11 +42,11 @@ export default function Page({ params }: { params: { id: string } }) {
         markAsRead(msg.id, msg.chatroomId);
       }
 
-      console.log(message);
+      // console.log(message);
     });
   }, [messages]);
 
-  console.log("send from my side", message);
+  // console.log("send from my side", message);
 
   const handleSendMessage = () => {
     if (message.trim()) {

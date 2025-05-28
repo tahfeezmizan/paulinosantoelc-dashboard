@@ -9,7 +9,7 @@ export default function PaymentTable({
   payment: SubscriptionType;
   index: number;
 }) {
-  console.log("Payment Table", payment);
+  // console.log("Payment Table", payment);
   return (
     <TableRow key={payment.id}>
       <TableCell className="font-medium">{index + 1}.</TableCell>

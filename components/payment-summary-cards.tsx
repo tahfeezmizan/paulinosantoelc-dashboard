@@ -13,7 +13,7 @@ import { DollarSign, Wallet } from "lucide-react";
 import { useState } from "react";
 export default function PaymentSummaryCards() {
   const { data, isLoading, isFetching, error } = useGetAllPaymentsQuery(null);
-  console.log("Payments Card", data);
+  // console.log("Payments Card", data);
 
   // const totalAmount = data?.reduce((acc, payment) => acc + payment?.plan?.price, 0);
   // console.log("Total ",totalAmount)

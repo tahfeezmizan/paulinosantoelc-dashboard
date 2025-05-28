@@ -5,6 +5,7 @@ import {
 } from "@/redux/api/userApi";
 import { CompanyDataType } from "@/types/common";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -21,7 +22,6 @@ import BusinessInfo from "./business-info";
 import CompanyDetails from "./company-details";
 import CompanyInformation from "./company-information";
 import ContactAndOwnerInfo from "./contact-and-owner-info";
-import { usePathname, useRouter } from "next/navigation";
 
 export default function UserAccount({ userId }: string) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -31,20 +31,20 @@ export default function UserAccount({ userId }: string) {
   const pathName = usePathname();
   const basePath = pathName.split("/").slice(0, 3).join("/");
   
-  console.log(basePath);
+  // console.log(basePath);
   
   const [deleteUser] = useDeleteUserMutation();
   const handleDelete = async () => {
-    console.log("Delete User");
+    // console.log("Delete User");
     setIsDeleting(true);
 
     try {
       const res = await deleteUser(userId).unwrap();
 
-      console.log(res);
+      // console.log(res);
 
       if (res.success) {
-        console.log("User deleted successfully");
+        // console.log("User deleted successfully");
         route.push(basePath);
       }
     } catch (error) {

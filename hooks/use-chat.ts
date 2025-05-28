@@ -43,7 +43,7 @@ export const useChat = () => {
     // Chat members list
     socket.on("chatMembers", (members: any[]) => {
       setChatMembers(members);
-      console.log("useChat: chatMembers", members);
+      // console.log("useChat: chatMembers", members);
     });
 
     // Error handling

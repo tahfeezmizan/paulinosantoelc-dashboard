@@ -42,7 +42,7 @@ export default function BuyerTable({
     try {
       const res = await deleteUser(buyer.id).unwrap();
       if (res.success) {
-        console.log("User deleted successfully");
+        // console.log("User deleted successfully");
         // router.push(basePath);
         await refetch();
       }

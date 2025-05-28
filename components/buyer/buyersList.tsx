@@ -36,7 +36,7 @@ export function BuyersList() {
   });
 
   const buyerData = data?.data;
-  console.log(searchQuery, "searchQuery");
+  // console.log(searchQuery, "searchQuery");
 
   const totalPages = buyerData?.metaData?.totalPage || 1;
 
@@ -47,7 +47,7 @@ export function BuyersList() {
   }
 
   if (error) {
-    console.log(error);
+    // console.log(error);
     const err = error as I_ErrorResponse;
     <p>Error: {err.data.message}</p>;
   }

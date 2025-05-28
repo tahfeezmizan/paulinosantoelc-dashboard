@@ -12,14 +12,14 @@ export default function ChatList() {
   const { data } = useGetAllUserQuery({});
   const users = data?.data?.users;
 
-  console.log(data?.data?.users);
+  // console.log(data?.data?.users);
 
   const { joinChat } = useChat();
 
   const handleJoinChat = (userId: string) => {
     joinChat(userId);
     socket?.emit("joinChat", { joinUserId: userId });
-    console.log("JJoin chat", userId);
+    // console.log("JJoin chat", userId);
   };
 
   return (

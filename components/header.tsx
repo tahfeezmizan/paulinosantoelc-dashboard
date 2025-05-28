@@ -9,7 +9,7 @@ import { Menu } from "lucide-react";
 
 export function Header() {
   const { data: user } = useGetLoggedInUserQuery(null);
-  console.log("Users",user);
+  // console.log("Users",user);
 
   return (
     <header className="h-20 bg-white shadow-md flex items-center justify-between pr-16 z-10">

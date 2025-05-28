@@ -20,7 +20,7 @@ export function PaymentList() {
   });
 
   const paymentData = data?.data;
-  console.log("Payment", paymentData);
+  // console.log("Payment", paymentData);
 
   const totalPages = data?.meta?.totalPage || 1;
   
@@ -30,7 +30,7 @@ export function PaymentList() {
   let content;
 
   if (error) {
-    console.log(error);
+    // console.log(error);
     const err = error as I_ErrorResponse;
     content = (
       <div className="text-red-500 bg-red-100 py-10 px-5">

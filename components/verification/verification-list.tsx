@@ -34,7 +34,7 @@ export function VerificationList() {
   // console.log("Vefify",data?.data?.users);
 
   const handleAcceptRequest = async (userId: string) => {
-    console.log("Accepted", userId);
+    // console.log("Accepted", userId);
 
     try {
       const res = await updateVerifyStatus({
@@ -42,7 +42,7 @@ export function VerificationList() {
         verifyStatus: "ACCEPTED",
       }).unwrap();
 
-      console.log("Accepted", res);
+      // console.log("Accepted", res);
 
       if (res.success === true) {
         toast.success("User verified successfully");
@@ -53,14 +53,14 @@ export function VerificationList() {
   };
 
   const handleRejectRequest = (userId: string) => {
-    console.log("Rejected", userId);
+    // console.log("Rejected", userId);
 
     try {
       const res = updateVerifyStatus({
         id: userId,
         verifyStatus: "REJECTED",
       }).unwrap();
-      if (res.success === true) {
+      if (res?.success === true) {
         toast.success("User rejected successfully");
       }
     } catch (error) {

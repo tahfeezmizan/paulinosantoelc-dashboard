@@ -18,7 +18,7 @@ interface Message {
 }
 
 export default function Page({ params }: any) {
-  console.log("User Id", { params });
+  // console.log("User Id", { params });
 
   const [inputValue, setInputValue] = useState("");
 
@@ -87,7 +87,7 @@ export default function Page({ params }: any) {
 
     if (inputValue.trim()) {
       // Log the input value to console as requested
-      console.log("Message submitted:", inputValue);
+      // console.log("Message submitted:", inputValue);
 
       // Create a new message
       const newMessage: Message = {
