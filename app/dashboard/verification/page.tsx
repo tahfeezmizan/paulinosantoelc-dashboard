@@ -1,10 +1,13 @@
-import { VerificationList } from "@/components/verification/verification-list"
+import ProtectedRoute from "@/components/ProtectedRoute/protected-route";
+import { VerificationList } from "@/components/verification/verification-list";
 
 export default function VerificationPage() {
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Verification</h1>
-      <VerificationList />
+      <ProtectedRoute>
+        <h1 className="text-2xl font-bold">Verification</h1>
+        <VerificationList />
+      </ProtectedRoute>
     </div>
-  )
+  );
 }

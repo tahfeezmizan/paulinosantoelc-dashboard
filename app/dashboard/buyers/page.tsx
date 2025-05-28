@@ -1,9 +1,12 @@
 import { BuyersList } from "@/components/buyer/buyersList";
+import ProtectedRoute from "@/components/ProtectedRoute/protected-route";
 
 export default function BuyersPage() {
   return (
     <div className="">
-      <BuyersList />
+      <ProtectedRoute>
+        <BuyersList />
+      </ProtectedRoute>
     </div>
   );
 }

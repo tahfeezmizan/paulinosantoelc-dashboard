@@ -1,4 +1,3 @@
-import { OverviewChart } from "@/components/overview-chart";
 import { baseApi } from "./baseApi";
 
 const analyticsApi = baseApi.injectEndpoints({
