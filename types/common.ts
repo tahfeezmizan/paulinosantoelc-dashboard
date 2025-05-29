@@ -137,3 +137,12 @@ export type OverviewDataType = {
   Buyer: number;
   Supplier: number;
 };
+
+export type Category = {
+  id: string;
+  name: string;
+  parentId: string | null;
+  children: any[]; // or remove if not needed
+  createdAt: string;
+  updatedAt: string;
+};

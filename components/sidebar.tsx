@@ -30,6 +30,11 @@ const navItems = [
     icon: Users,
   },
   {
+    title: "Category List",
+    href: "/dashboard/category",
+    icon: Users,
+  },
+  {
     title: "Verification",
     href: "/dashboard/verification",
     icon: ShieldCheck,

@@ -16,14 +16,6 @@ import { useState } from "react";
 import Pagination from "../pegination/pagination";
 import BuyerTable from "./buyer-table";
 
-// Define the buyers data type
-interface Buyers {
-  id: string;
-  name: string;
-  country: string;
-  company: string;
-  products: string;
-}
 
 export function BuyersList() {
   const [searchQuery, setSearchQuery] = useState("");
