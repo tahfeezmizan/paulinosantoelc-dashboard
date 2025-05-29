@@ -9,34 +9,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useGetAllCategoryQuery } from "@/redux/api/categoryApi";
+import {
+  useGetAllCategoryQuery
+} from "@/redux/api/categoryApi";
+import { Category } from "@/types/common";
 import { Search } from "lucide-react";
 import { useState } from "react";
-import Pagination from "../pegination/pagination";
-import CategoryTable from "./categoryTable";
-import { Category } from "@/types/common";
-import Link from "next/link";
 import { Modal } from "../modal/modal";
-import { DialogTrigger } from "@radix-ui/react-dialog";
+import Pagination from "../pegination/pagination";
 import { Button } from "../ui/button";
+import CategoryTable from "./categoryTable";
 
 export function CategoryList() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const { data } = useGetAllCategoryQuery({
+  const { data, refetch } = useGetAllCategoryQuery({
     page: currentPage,
     limit: itemsPerPage,
     searchTerm: searchQuery,
   });
 
   const categoryData = data?.data;
-  // console.log(searchQuery, "searchQuery");
-
   const totalPages = categoryData?.metaData?.totalPage || 1;
-
-  // console.log("Categorys Data", categoryData);
+  console.log("Categorys Data", categoryData);
 
   return (
     <div className="space-y-4">
@@ -91,7 +88,7 @@ export function CategoryList() {
             </TableHeader>
             <TableBody>
               {categoryData?.map((category: Category, index: number) => (
-                <CategoryTable key={index} index={index} category={category} />
+                <CategoryTable key={index} index={index} refetch={refetch} category={category} />
               ))}
             </TableBody>
           </Table>
