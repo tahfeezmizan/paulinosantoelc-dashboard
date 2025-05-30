@@ -9,9 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  useGetAllCategoryQuery
-} from "@/redux/api/categoryApi";
+import { useGetAllCategoryQuery } from "@/redux/api/categoryApi";
 import { Category } from "@/types/common";
 import { Search } from "lucide-react";
 import { useState } from "react";
@@ -19,12 +17,14 @@ import { Modal } from "../modal/modal";
 import Pagination from "../pegination/pagination";
 import { Button } from "../ui/button";
 import CategoryTable from "./categoryTable";
+import { AddSubCategoryModal } from "../modal/add-sub-category";
 
 export function CategoryList() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(100);
   const { data, refetch } = useGetAllCategoryQuery({
     page: currentPage,
     limit: itemsPerPage,
@@ -63,6 +63,19 @@ export function CategoryList() {
             Add Category
           </Button>
           <Modal open={isOpen} onOpenChange={setIsOpen} />
+
+          <Button
+            onClick={() => setIsCategoryModalOpen(true)}
+            variant="outline"
+            className="border px-3 py-1.5 rounded-sm text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white duration-300"
+          >
+            Add SubCategory
+          </Button>
+          <AddSubCategoryModal
+            categoryData={categoryData}
+            open={isCategoryModalOpen}
+            onOpenChange={setIsCategoryModalOpen}
+          />
         </div>
       </div>
 
@@ -80,7 +93,6 @@ export function CategoryList() {
                 <TableHead className="text-[#0F172A] font-semibold">
                   Sub Category Name
                 </TableHead>
-
                 <TableHead className=" w-[80px] text-[#0F172A] font-semibold">
                   Action
                 </TableHead>
@@ -88,7 +100,12 @@ export function CategoryList() {
             </TableHeader>
             <TableBody>
               {categoryData?.map((category: Category, index: number) => (
-                <CategoryTable key={index} index={index} refetch={refetch} category={category} />
+                <CategoryTable
+                  key={index}
+                  index={index}
+                  refetch={refetch}
+                  category={category}
+                />
               ))}
             </TableBody>
           </Table>

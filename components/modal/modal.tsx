@@ -28,16 +28,27 @@ export function Modal({ open, onOpenChange }: ModalProps) {
     setCategoryName(event.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // Make this async
     console.log("category name", categoryName);
 
-    onOpenChange(false);
+    if (!categoryName.trim()) {
+      toast.error("Category name cannot be empty");
+      return;
+    }
 
     try {
-      const res = createCategory({ name: categoryName }).unwrap();
-      if ((res.success = true)) {
+      const res = await createCategory({ name: categoryName }).unwrap(); // Add await here
+
+      console.log(res);
+
+      if (res.success) {
+        // Fixed the assignment (=) to comparison (== or ===)
         toast.success("Category added successfully");
         setCategoryName("");
+        onOpenChange(false); // Move this inside the success condition
+      } else {
+        toast.error("Failed to add category");
       }
     } catch (error) {
       console.log(error);
@@ -53,7 +64,7 @@ export function Modal({ open, onOpenChange }: ModalProps) {
         </DialogHeader>
 
         <div className="space-y-2 py-2">
-          <Label htmlFor="file" className=" w-full">
+          <Label htmlFor="file" className="w-full">
             Category Name
           </Label>
           <Input
@@ -66,7 +77,7 @@ export function Modal({ open, onOpenChange }: ModalProps) {
 
         <DialogFooter className="w-full flex justify-center">
           <Button type="submit" onClick={handleSubmit}>
-            Save changes
+            Add Category
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -9,7 +9,7 @@ const categoryApi = baseApi.injectEndpoints({
         const url = searchTerm
           ? // ? `/category?page=${page}&limit=${limit}&searchTerm=${searchTerm}`
             `/category?limit=${limit}&searchTerm=${searchTerm}&page=${page}`
-          : `/category?page=${page}&limit=${limit}`;
+          : `/category?limit=${limit}`;
         return {
           url,
           method: "GET",

@@ -15,14 +15,24 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 interface ModalProps {
+  name: string;
   open: boolean;
   categoryId: string;
   onOpenChange: (open: boolean) => void;
+  refetch: () => void;
 }
 
-export function UpdateModal({ open, onOpenChange, categoryId }: ModalProps) {
+export function UpdateModal({
+  open,
+  onOpenChange,
+  categoryId,
+  name,
+  refetch,
+}: ModalProps) {
   const [categoryName, setCategoryName] = useState("");
   const [updateCategory] = useUpdateCategoryMutation();
+
+  // console.log("Update Modal", categoryId);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCategoryName(event.target.value);
@@ -35,8 +45,8 @@ export function UpdateModal({ open, onOpenChange, categoryId }: ModalProps) {
       return;
     }
 
-    console.log("category name", categoryName);
-    console.log("category id", categoryId);
+    // console.log("category name", categoryName);
+    // console.log("category id", categoryId);
 
     try {
       // Fixed: Match API parameter structure
@@ -50,6 +60,7 @@ export function UpdateModal({ open, onOpenChange, categoryId }: ModalProps) {
         toast.success("Category updated successfully");
         setCategoryName("");
         onOpenChange(false);
+        refetch();
       } else {
         toast.error(res.message || "Failed to update category");
       }
@@ -73,6 +84,7 @@ export function UpdateModal({ open, onOpenChange, categoryId }: ModalProps) {
           <Input
             id="categoryName"
             type="text"
+            defaultValue={name}
             onChange={handleInputChange}
             value={categoryName}
             placeholder="Enter Category Name"
