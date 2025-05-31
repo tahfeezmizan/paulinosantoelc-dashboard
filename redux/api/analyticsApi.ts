@@ -9,8 +9,8 @@ const analyticsApi = baseApi.injectEndpoints({
       }),
     }),
     OverviewChart: builder.query({
-      query: () => ({
-        url: "/analytics/overview",
+      query: ({ range }) => ({
+        url: `/analytics/overview?range=${range}`,
         method: "GET",
       }),
     }),

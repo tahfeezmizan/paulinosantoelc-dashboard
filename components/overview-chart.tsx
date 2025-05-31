@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { useOverviewChartQuery } from "@/redux/api/analyticsApi";
 import { OverviewDataType } from "@/types/common";
+import { useState } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -28,7 +29,11 @@ import {
 } from "recharts";
 
 export function OverviewChart() {
-  const { data: OverviewData } = useOverviewChartQuery({});
+  const [timeRange, setTimeRange] = useState("monthly");
+  const { data: OverviewData } = useOverviewChartQuery({
+    range: timeRange,
+  });
+
   const analytics = OverviewData?.data;
 
   const chartData = analytics?.map((item: OverviewDataType) => ({
@@ -37,7 +42,8 @@ export function OverviewChart() {
     buyer: item.Buyer,
   }));
 
-  console.log("chartData", chartData);
+  // console.log("chartData", chartData);
+  // console.log("Time Range", timeRange);
 
   return (
     <Card>
@@ -46,7 +52,11 @@ export function OverviewChart() {
           <CardTitle>Overview</CardTitle>
           <CardDescription>Supplier and buyer activity</CardDescription>
         </div>
-        <Select defaultValue="weekly">
+        <Select
+          defaultValue="weekly"
+          value={timeRange}
+          onValueChange={(value) => setTimeRange(value)}
+        >
           <SelectTrigger className="w-[120px]">
             <SelectValue placeholder="Select" />
           </SelectTrigger>
