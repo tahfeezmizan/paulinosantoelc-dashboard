@@ -11,7 +11,9 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import logo from "@/assets/logo/logo-blue.png";
 import { useAuth } from "./auth-provider";
+import Image from "next/image";
 
 const navItems = [
   {
@@ -66,7 +68,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="h-20 p-4 flex items-center justify-center">
         <Link href="/dashboard">
-          <div className="text-blue-500 font-bold text-2xl">LOGO</div>
+          <Image src={logo} alt="hero" width={200} height={100} />
         </Link>
       </div>
 

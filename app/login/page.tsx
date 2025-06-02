@@ -9,6 +9,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import logo from "@/assets/logo/logo-blue.png";
+import Image from "next/image";
 
 type FormValues = {
   email: string;
@@ -49,7 +51,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-8 text-center">
         <div className="flex justify-center">
-          <div className="text-blue-500 font-bold text-4xl">LOGO</div>
+          <Image src={logo} alt="hero" width={200} height={100} />
         </div>
 
         <div className="space-y-2">
